@@ -1,8 +1,7 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.util.Scanner;
 import java.util.Objects;
- 
+import java.io.*;
+
 /**
  * IMPORTANT: 
  *      O nome da classe deve ser "Main" para que a sua solução execute
@@ -181,78 +180,85 @@ public class Main {
         }
     }
 
-    public static void insertInput(BSTPosition root) throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        String input = reader.readLine();
-
-        if (input != null && input.startsWith("I ") && input.length() == 3) {
-            char key = input.charAt(2);
-            BSTree.insert((int) key, (int) key, root);
-        } 
-        else {
-            return;
+    public static void insertInput(BSTPosition root, Scanner scanner) {
+        if (scanner.hasNextLine()) {
+            String input = scanner.nextLine();
+            if (input.startsWith("I ") && input.length() == 3) {
+                char key = input.charAt(2);
+                BSTree.insert((int) key, (int) key, root);
+            }
         }
     }
 
-    public static void travInput(BSTPosition root) throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        String input = reader.readLine();
-    
-        if ("INFIXA".equalsIgnoreCase(input)) {
-            System.out.println(BSTree.print(root, (p, sb) -> BSTree.buildInorderString(p, sb)));
-        } else if ("PREFIXA".equalsIgnoreCase(input)) {
-            System.out.println(BSTree.print(root, (p, sb) -> BSTree.buildPreorderString(p, sb)));
-        } else if ("POSFIXA".equalsIgnoreCase(input)) {
-            System.out.println(BSTree.print(root, (p, sb) -> BSTree.buildPostOrderString(p, sb)));
-        } else {
-            return;
+    public static void travInput(BSTPosition root, Scanner scanner) {
+        if (scanner.hasNextLine()) {
+            String input = scanner.nextLine();
+            if ("INFIXA".equalsIgnoreCase(input)) {
+                System.out.println(BSTree.print(root, (p, sb) -> BSTree.buildInorderString(p, sb)));
+            } else if ("PREFIXA".equalsIgnoreCase(input)) {
+                System.out.println(BSTree.print(root, (p, sb) -> BSTree.buildPreorderString(p, sb)));
+            } else if ("POSFIXA".equalsIgnoreCase(input)) {
+                System.out.println(BSTree.print(root, (p, sb) -> BSTree.buildPostOrderString(p, sb)));
+            }
         }
     }
 
-    public static void searchPlusResultInput(BSTPosition root) throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        String input = reader.readLine();
-    
-        if (input != null && input.startsWith("P ") && input.length() == 3) {
-            char key = input.charAt(2);
-            System.out.println(BSTree.searchPlusResult((int) key, root));
-        } else {
-            return;
+    public static void searchPlusResultInput(BSTPosition root, Scanner scanner) {
+        if (scanner.hasNextLine()) {
+            String input = scanner.nextLine();
+            if (input.startsWith("P ") && input.length() == 3) {
+                char key = input.charAt(2);
+                System.out.println(BSTree.searchPlusResult((int) key, root));
+            }
         }
     }
-    
+
     public static void main(String[] args) throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        String input;
 
-        // 1. insert do nó raiz
-        String rootInput = reader.readLine();
-        if (rootInput != null && rootInput.startsWith("I ") && rootInput.length() == 3) {
-            char rootKey = rootInput.charAt(2);
-            var root = new BSTPosition((int) rootKey, (int) rootKey, new BSTPosition(), new BSTPosition());
-    
-            //3 inputs de inserção
-            for (int i = 0; i < 3; i++) {
-                insertInput(root);
+        BSTPosition root = null;
+
+        while ((input = br.readLine()) != null) {
+            String[] st = input.split(" ");
+            char c;
+
+            if (st[0].equals("I")) {
+                c = st[1].charAt(0);
+                if (root == null) {
+                    root = new BSTPosition((int) c, (int) c, new BSTPosition(), new BSTPosition());
+                } else {
+                    BSTree.insert((int) c, (int) c, root);
+                }
+
+            } else if (st[0].equals("PREFIXA")) {
+                if (root != null) {
+                    bw.append(BSTree.print(root, (p, sb) -> BSTree.buildPreorderString(p, sb))).append("\n");
+                    bw.flush();
+                }
+
+            } else if (st[0].equals("INFIXA")) {
+                if (root != null) {
+                    bw.append(BSTree.print(root, (p, sb) -> BSTree.buildInorderString(p, sb))).append("\n");
+                    bw.flush();
+                }
+
+            } else if (st[0].equals("POSFIXA")) {
+                if (root != null) {
+                    bw.append(BSTree.print(root, (p, sb) -> BSTree.buildPostOrderString(p, sb))).append("\n");
+                    bw.flush();
+                }
+
+            } else if (st[0].equals("P")) {
+                c = st[1].charAt(0);
+                if (root != null) {
+                    bw.append((BSTree.searchPlusResult((int) c, root))).append("\n");
+                    bw.flush();
+                }
             }
-    
-            //3 inputs de travessia
-            for (int i = 0; i < 3; i++) {
-                travInput(root);
-            }
-    
-            //2 inputs de busca
-            for (int i = 0; i < 2; i++) {
-                searchPlusResultInput(root);
-            }
-    
-            // mais uma inserção
-            insertInput(root);
-    
-            // mais uma busca
-            travInput(root);
-        } else {
-            return;
         }
+        bw.close();
     }
- 
+
 }
